@@ -1,21 +1,24 @@
-import csv
 import sys
+import pandas as pd
+import numpy as np
 from validate_email import validate_email
 
-with open(sys.argv[1], newline='') as myFile:
-    reader = csv.reader(myFile)
-    emails = []
-    for row in reader:
-        emails.append(row[2])
+# open file from command line arguments
+try:
+    csvfile = open(sys.argv[1], newline='')
+except IndexError as error:
+    print(error)
+    print("Email checker requires an input file")
+    sys.exit()
+except FileNotFoundError as error:
+    print(error)
+    print("File not found")
+    sys.exit()
 
-print(emails)
 
-valid = []
-invalid = []
-for email in emails:
-    is_valid = validate_email(email,check_mx=True)
-    if is_valid:
-        valid.append(email)
-    else:
-        invalid.append(email)
-    print(is_valid)
+#create pandas dataframe from csv file
+email_list = pd.read_csv(csvfile, header=None)
+for email in email_list[2]:
+    email_list[3] = validate_email(email) #check_mx=True
+
+print(email_list)
