@@ -15,10 +15,11 @@ except FileNotFoundError as error:
     print("File not found")
     sys.exit()
 
-
 #create pandas dataframe from csv file
 email_list = pd.read_csv(csvfile, header=None)
 for email in email_list[2]:
-    email_list[3] = validate_email(email) #check_mx=True
+    print(validate_email(email))# ,check_mx=True))
+    # TODO: stop from writing entire column in for loop
+    #email_list[3] = validate_email(email)
 
 print(email_list)
