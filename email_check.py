@@ -1,7 +1,6 @@
 import sys
 import pandas as pd
-import numpy as np
-from validate_email import validate_email
+import pymailcheck as pymailcheck
 
 # open file from command line arguments
 try:
@@ -17,9 +16,41 @@ except FileNotFoundError as error:
 
 #create pandas dataframe from csv file
 email_list = pd.read_csv(csvfile, header=None)
-for email in email_list[2]:
-    print(validate_email(email))# ,check_mx=True))
-    # TODO: stop from writing entire column in for loop
-    #email_list[3] = validate_email(email)
+fixed_list = list()
+fname = 0
+lname = 1
+email = 2
 
+for index,row in email_list.iterrows():
+    suggestion = pymailcheck.suggest(row[email])
+    
+    ## if we want to replace all the emails 
+    ## with the fixed versions without checking
+    if (suggestion):
+        fixed_email = suggestion['full']
+        fixed_full = row[fname],row[lname],fixed_email
+        row[email] = fixed_email  
+        
+    else:
+        fixed_full = '---','---','---'
+    fixed_list.append(fixed_full)
+    ## if we want to make a list of the emails
+    ## that need a fix
+    '''
+    if (suggestion):
+        fixed_email = suggestion['full']
+        fixed_full = row[fname],row[lname],fixed_email
+    else:
+        fixed_full = '---','---','---'
+    fixed_list.append(fixed_full)
+    '''
+    
+fixed_listdf = pd.DataFrame(fixed_list)
 print(email_list)
+
+## print a list of the fixed emails
+## leave untouched ones as empty spots
+print('\n-------------------')
+print('FIXED EMAILS:')
+print('-------------------')
+print(fixed_listdf)
