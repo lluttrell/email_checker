@@ -20,32 +20,23 @@ fixed_list = list()
 fname = 0
 lname = 1
 email = 2
+changed = 3
 
 for index,row in email_list.iterrows():
     suggestion = pymailcheck.suggest(row[email])
-    
-    ## if we want to replace all the emails 
+
+    ## if we want to replace all the emails
     ## with the fixed versions without checking
     if (suggestion):
         fixed_email = suggestion['full']
-        fixed_full = row[fname],row[lname],fixed_email
-        row[email] = fixed_email  
-        
+        fixed_full = row[fname],row[lname],fixed_email,True
+        row[email] = fixed_email
     else:
-        fixed_full = '---','---','---'
+        fixed_full = row[fname],row[lname],row[email],False
     fixed_list.append(fixed_full)
-    ## if we want to make a list of the emails
-    ## that need a fix
-    '''
-    if (suggestion):
-        fixed_email = suggestion['full']
-        fixed_full = row[fname],row[lname],fixed_email
-    else:
-        fixed_full = '---','---','---'
-    fixed_list.append(fixed_full)
-    '''
-    
+
 fixed_listdf = pd.DataFrame(fixed_list)
+
 print(email_list)
 
 ## print a list of the fixed emails
