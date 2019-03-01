@@ -1,21 +1,56 @@
-import csv
 import sys
-from validate_email import validate_email
+import pandas as pd
+import pymailcheck as pymailcheck
 
-with open(sys.argv[1], newline='') as myFile:
-    reader = csv.reader(myFile)
-    emails = []
-    for row in reader:
-        emails.append(row[2])
+# open file from command line arguments
+try:
+    csvfile = open(sys.argv[1], newline='')
+except IndexError as error:
+    print(error)
+    print("Email checker requires an input file")
+    sys.exit()
+except FileNotFoundError as error:
+    print(error)
+    print("File not found")
+    sys.exit()
 
-print(emails)
+#create pandas dataframe from csv file
+email_list = pd.read_csv(csvfile, header=None)
+fixed_list = list()
+fname = 0
+lname = 1
+email = 2
 
-valid = []
-invalid = []
-for email in emails:
-    is_valid = validate_email(email,check_mx=True)
-    if is_valid:
-        valid.append(email)
+for index,row in email_list.iterrows():
+    suggestion = pymailcheck.suggest(row[email])
+    
+    ## if we want to replace all the emails 
+    ## with the fixed versions without checking
+    if (suggestion):
+        fixed_email = suggestion['full']
+        fixed_full = row[fname],row[lname],fixed_email
+        row[email] = fixed_email  
+        
     else:
-        invalid.append(email)
-    print(is_valid)
+        fixed_full = '---','---','---'
+    fixed_list.append(fixed_full)
+    ## if we want to make a list of the emails
+    ## that need a fix
+    '''
+    if (suggestion):
+        fixed_email = suggestion['full']
+        fixed_full = row[fname],row[lname],fixed_email
+    else:
+        fixed_full = '---','---','---'
+    fixed_list.append(fixed_full)
+    '''
+    
+fixed_listdf = pd.DataFrame(fixed_list)
+print(email_list)
+
+## print a list of the fixed emails
+## leave untouched ones as empty spots
+print('\n-------------------')
+print('FIXED EMAILS:')
+print('-------------------')
+print(fixed_listdf)
