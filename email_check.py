@@ -37,11 +37,7 @@ for index,row in email_list.iterrows():
 
 fixed_listdf = pd.DataFrame(fixed_list)
 
-print(email_list)
-
-## print a list of the fixed emails
-## leave untouched ones as empty spots
-print('\n-------------------')
-print('FIXED EMAILS:')
-print('-------------------')
-print(fixed_listdf)
+t = fixed_listdf.loc[fixed_listdf[3] == True]
+f = fixed_listdf.loc[fixed_listdf[3] == False]
+t.to_csv(r'change.csv',header=False, index=False,columns=(0,1,2))
+f.to_csv(r'output.csv',header=False, index=False,columns=(0,1,2))
