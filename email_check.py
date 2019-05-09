@@ -1,21 +1,16 @@
 import sys
 import pandas as pd
 import pymailcheck as pymailcheck
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
-# open file from command line arguments
-try:
-    csvfile = open(sys.argv[1], newline='')
-except IndexError as error:
-    print(error)
-    print("Email checker requires an input file")
-    sys.exit()
-except FileNotFoundError as error:
-    print(error)
-    print("File not found")
-    sys.exit()
+Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
+print(filename)
+
 
 #create pandas dataframe from csv file
-email_list = pd.read_csv(csvfile, header=None)
+email_list = pd.read_csv(filename, header=None)
 fixed_list = list()
 fname = 0
 lname = 1
@@ -41,7 +36,7 @@ for index,row in email_list.iterrows():
 
 fixed_listdf = pd.DataFrame(fixed_list)
 
-t = fixed_listdf.loc[fixed_listdf[4] == True]
-f = fixed_listdf.loc[fixed_listdf[3] == False]
-t.to_csv(r'change.csv',header=False, index=False,columns=(0,1,2,3))
-f.to_csv(r'output.csv',header=False, index=False,columns=(0,1,2))
+t = fixed_listdf.loc[fixed_listdf[4] == True] ## change
+f = fixed_listdf.loc[fixed_listdf[3] == False] ## output (no change)
+t.to_csv(r'incorrect.csv',header=("First Name","Last Name","Suggested Email","Current Email"), index=False,columns=(0,1,2,3))
+f.to_csv(r'correct.csv',header=("First Name","Last Name","Email"), index=False,columns=(0,1,2))
